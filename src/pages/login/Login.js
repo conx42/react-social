@@ -1,6 +1,27 @@
 import "./login.css";
+import { useContext, useRef } from "react";
+import { loginCall } from "../../apiCalls";
+import { AuthContext } from "../../context/AuthContext";
+import CircularProgress from '@mui/material/CircularProgress';
+import { withTheme } from "@emotion/react";
+
 
 export default function Login() {
+
+  const email = useRef();
+  const password = useRef();
+  const { user, isFetching, error, dispatch } = useContext(AuthContext)
+
+
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    loginCall({ email: email.current.value, password: password.current.value },
+      dispatch);
+  }
+
+  console.log(user);
+
   return (
     <div className="login">
       <div className="loginWrapper">
@@ -11,15 +32,24 @@ export default function Login() {
           </span>
         </div>
         <div className="loginRight">
-          <div className="loginBox">
-            <input placeholder="Email" className="loginInput" />
-            <input placeholder="Password" className="loginInput" />
-            <button className="loginButton">Log In</button>
+          <form className="loginBox" onSubmit={handleClick} >
+            <input placeholder="Email" required type="email" className="loginInput" ref={email} />
+            <input
+              placeholder="Password"
+              type="password"
+              className="loginInput"
+              required
+              minLength="6"
+              ref={password}
+            />
+            <button type="submit" disabled={isFetching} className="loginButton">{isFetching ? (<CircularProgress style={{ color: "white" }} />)
+              :
+              ("Log In")}</button>
             <span className="loginForgot">Forgot Password?</span>
             <button className="loginRegisterButton">
-              Create a New Account
+              {isFetching ? (<CircularProgress style={{ color: "white" }} />) : ("Create a New Account")}
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>
